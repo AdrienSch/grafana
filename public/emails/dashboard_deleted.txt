@@ -1,0 +1,15 @@
+{{HiddenSubject .Subject "Dashboard \"{{.DashboardTitle}}\" has been deleted"}}
+
+Dashboard "{{.DashboardTitle}}" has been deleted
+
+The dashboard "{{.DashboardTitle}}" in the {{.OrgName}} organization was deleted by {{.DeletedBy}} on {{.DeletedAt}}.
+
+You requested to receive its JSON definition before deletion. It is included below.
+
+---
+
+{{.DashboardJSON}}
+
+---
+
+Sent by Grafana v{{.BuildVersion}} (c) {{now | date "2006"}} Grafana Labs
