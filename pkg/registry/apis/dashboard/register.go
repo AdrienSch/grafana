@@ -126,6 +126,7 @@ type DashboardsAPIBuilder struct {
 	namespacer                   request.NamespaceMapper
 	dashboardActivityChannel     live.DashboardActivityChannel
 	notificationSvc              notifications.Service
+	userSvc                      user.Service
 	isStandalone                 bool // skips any handling including anything to do with legacy storage
 }
 
@@ -199,6 +200,7 @@ func RegisterAPIService(
 		namespacer:                   namespacer,
 		dashboardActivityChannel:     dashboardActivityChannel,
 		notificationSvc:              notificationSvc,
+		userSvc:                      userService,
 		legacy: &DashboardStorage{
 			Access:           legacy.NewDashboardSQLAccess(dbp, namespacer, dashStore, provisioning, libraryPanelSvc, sorter, dashboardPermissionsSvc, accessControl, features),
 			DashboardService: dashboardService,
@@ -751,6 +753,7 @@ func (b *DashboardsAPIBuilder) storageForVersion(
 		dashboardPermissionsSvc: b.dashboardPermissionsSvc,
 		live:                    b.dashboardActivityChannel,
 		notificationSvc:         b.notificationSvc,
+		userSvc:                 b.userSvc,
 	}
 
 	// Register the DTO endpoint that will consolidate all dashboard bits
