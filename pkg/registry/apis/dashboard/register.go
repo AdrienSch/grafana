@@ -59,6 +59,7 @@ import (
 	"github.com/grafana/grafana/pkg/services/libraryelements"
 	"github.com/grafana/grafana/pkg/services/librarypanels"
 	"github.com/grafana/grafana/pkg/services/live"
+	"github.com/grafana/grafana/pkg/services/notifications"
 	"github.com/grafana/grafana/pkg/services/provisioning"
 	"github.com/grafana/grafana/pkg/services/publicdashboards"
 	"github.com/grafana/grafana/pkg/services/quota"
@@ -126,6 +127,8 @@ type DashboardsAPIBuilder struct {
 	snapshotStorage              rest.Storage // for dual-write support in routes
 	namespacer                   request.NamespaceMapper
 	dashboardActivityChannel     live.DashboardActivityChannel
+	notificationSvc              notifications.Service
+	userSvc                      user.Service
 	isStandalone                 bool // skips any handling including anything to do with legacy storage
 }
 
@@ -155,6 +158,7 @@ func RegisterAPIService(
 	publicDashboardService publicdashboards.Service,
 	snapshotService dashboardsnapshots.Service,
 	dashboardActivityChannel live.DashboardActivityChannel,
+	notificationSvc notifications.Service,
 	configProvider configprovider.ConfigProvider,
 ) *DashboardsAPIBuilder {
 	cfg, err := configProvider.Get(context.Background())
@@ -197,6 +201,8 @@ func RegisterAPIService(
 		snapshotOptions:              snapshotOptions,
 		namespacer:                   namespacer,
 		dashboardActivityChannel:     dashboardActivityChannel,
+		notificationSvc:              notificationSvc,
+		userSvc:                      userService,
 		legacy: &DashboardStorage{
 			Access:           legacy.NewDashboardSQLAccess(dbp, namespacer, dashStore, provisioning, libraryPanelSvc, sorter, dashboardPermissionsSvc, accessControl, features),
 			DashboardService: dashboardService,
@@ -801,6 +807,8 @@ func (b *DashboardsAPIBuilder) storageForVersion(
 		Storage:                 dw,
 		dashboardPermissionsSvc: b.dashboardPermissionsSvc,
 		live:                    b.dashboardActivityChannel,
+		notificationSvc:         b.notificationSvc,
+		userSvc:                 b.userSvc,
 	}
 
 	// Register the DTO endpoint that will consolidate all dashboard bits
